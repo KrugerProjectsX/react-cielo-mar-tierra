@@ -13,7 +13,7 @@ import {
 const Home = () => {
   return (
     <div>
-      <Navbar />
+  
       <Container maxWidth="xl" className="mx-auto mt-10">
         <Typography variant="h3" sx={{ color: PRIMARY_COLOR, textAlign: 'center', mb: 4 }}>
           Welcome to FlatFinder

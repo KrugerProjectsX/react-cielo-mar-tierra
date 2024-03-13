@@ -5,15 +5,20 @@ import Home from './pages/HomePage';
 import MyFlats from './pages/MyFlatsPage';
 import AllFlats from './pages/AllFlatsPage';
 import Profile from './pages/ProfilePage';
+import Navbar from './components/Navbar';
 
 function App() {
   return (
-    <Routes>
+  <>
+  <Navbar/>
+  <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/my-flats" element={<MyFlats />} />
       <Route path="/all-flats" element={<AllFlats />} />
       <Route path="/profile" element={<Profile />} />
     </Routes>
+  </>
+    
   );
 }
 

@@ -133,7 +133,7 @@ function Navbar() {
                 </IconButton>
               </Tooltip>
             ) : (
-              <Button component={Link} sx={{ color: linkColor }} onClick={Login}>
+              <Button component={Link} sx={{ color: linkColor }} onClick={() => setUserLoggedIn(true)}>
               Login
               </Button>
             )}
