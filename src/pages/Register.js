@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { AppBar, Tabs, Tab, Typography, Box } from '@mui/material';
 
-function Ingreso() {
+function Register() {
   const [activeTab, setActiveTab] = useState(0);
 
-  const cambiarTab = (event, newActiveTab) => {
+  const handleChangeTab = (event, newActiveTab) => {
     setActiveTab(newActiveTab);
   };
 
@@ -29,24 +29,24 @@ function Ingreso() {
   };
 
   return (
-    <div className="Ingreso">
+    <div className="Register">
       <AppBar position="static">
-        <Tabs value={activeTab} onChange={cambiarTab} aria-label="simple tabs example">
-          <Tab label="Parrafo Sencillo" />
-          <Tab label="Logo BorjaScript" />
-          <Tab label="Tabla Últimos Vídeos" />
+        <Tabs value={activeTab} onChange={handleChangeTab} aria-label="simple tabs example">
+          <Tab label="Simple Paragraph" />
+          <Tab label="BorjaScript Logo" />
+          <Tab label="Latest Videos Table" />
         </Tabs>
       </AppBar>
       <TabPanel value={activeTab} index={0}>
         <div className="container">
           <br />
-          <p>Este es un párrafo sencillo</p>
+          <p>This is a simple paragraph</p>
         </div>
       </TabPanel>
       <TabPanel value={activeTab} index={1}>
         <div className="container">
           <br />
-          {/* Aquí va el contenido para el segundo tab */}
+          {/* Content for the second tab goes here */}
         </div>
       </TabPanel>
       <TabPanel value={activeTab} index={2}>
@@ -56,24 +56,24 @@ function Ingreso() {
             <thead>
               <tr>
                 <th>#</th>
-                <th>Nombre</th>
-                <th>Fecha de Subida</th>
+                <th>Name</th>
+                <th>Upload Date</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>1</td>
-                <td>Cómo Solucionar el Error pickAlgorithm en React || Fix Cannot read property 'pickAlgorithm' of null</td>
-                <td>21/04/2022</td>
+                <td>How to Fix the pickAlgorithm Error in React || Fix Cannot read property 'pickAlgorithm' of null</td>
+                <td>04/21/2022</td>
               </tr>
               <tr>
                 <td>2</td>
-                <td>Autocomplete Sencillo en React JS || React Hooks || Tutorial en Español</td>
-                <td>27/04/2022</td>
+                <td>Simple Autocomplete in React JS || React Hooks || Tutorial in Spanish</td>
+                <td>04/27/2022</td>
               </tr>
               <tr>
                 <td>3</td>
-                <td>Autocomplete con Web Api en React JS || Api Rest || Tutorial en Español</td>
+                <td>Autocomplete with Web Api in React JS || Rest Api || Tutorial in Spanish</td>
                 <td>05/05/2022</td>
               </tr>
             </tbody>
@@ -84,4 +84,4 @@ function Ingreso() {
   );
 }
 
-export default Ingreso;
+export default Register;

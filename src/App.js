@@ -8,7 +8,7 @@ import Navbar from './components/Navbar';
 
 import Profile from './pages/Profile';
 import Login from './pages/Login';
-import Ingreso from './pages/Ingreso';
+import Ingreso from './pages/Register';
 import Register from './pages/RegisterPage'
 
 
