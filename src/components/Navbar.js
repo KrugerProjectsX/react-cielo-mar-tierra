@@ -13,7 +13,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import Login from '../components/Login';
+import Login from '../pages/Login';
 import { db } from '../firebase';
 import { PRIMARY_COLOR, LINK_COLOR, ACCENT_COLOR } from './Colors';
 
@@ -133,9 +133,10 @@ function Navbar() {
                 </IconButton>
               </Tooltip>
             ) : (
-              <Button component={Link} sx={{ color: linkColor }} onClick={Login}>
+              <Button component={Link} sx={{ color: linkColor }} onClick={() => setUserLoggedIn(true)}>
               Login
               </Button>
+              
             )}
             <Menu
               sx={{ mt: '45px' }}
