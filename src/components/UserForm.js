@@ -1,14 +1,17 @@
 import { Box, Button, TextField } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { doc, updateDoc, getDoc, collection, addDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import{db} from '../firebase'
 
 export default function UserForm({ type }) {
+
+    const currentDate = new Date().toJSON().slice(0, 10);
+
     const [user, setUser] = useState({
         firstName: '',
         lastName: '',
         email: '',
-        birthDate: ''
+        birthDate: currentDate
     });
     const [userLoaded, setUserLoaded] = useState(false);
     const firstNameRef = useRef('');
@@ -17,11 +20,11 @@ export default function UserForm({ type }) {
     const passwordRef = useRef('');
     const birthDateRef = useRef('');
     const id = JSON.parse(localStorage.getItem('user_logged'));
-    const refCreate = collection(db, "user");
-    const currentDate = new Date().toJSON().slice(0, 10);
+    const refCreate = collection(db, "users");
+    
     let ref = null;
     if (id) {
-        ref = doc(db, "user", id);
+        ref = doc(db, "users", id);
     }
     const today = new Date();
     const minBirthDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate()).toISOString().split('T')[0];
