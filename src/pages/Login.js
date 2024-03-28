@@ -112,12 +112,13 @@ const Login = ({ isOpen = true, handleClose = false }) => {
           </Tabs>
 
           {activeTab === '1' && (
-            <Box className="container" mb={2} sx={{ display: 'flex', flexDirection: 'column' }}>
-              <Typography variant="h6" component="div" mb={2}></Typography>
-              <TextField label="Email" variant="outlined" fullWidth value={email} onChange={handleEmailChange} mb={2} inputRef={emailRef} />
-              <TextField label="Password" type="password" variant="outlined" fullWidth value={password} onChange={handlePasswordChange} mb={2} inputRef={passwordRef} />
-              <Button variant="contained" onClick={handleLoginClick} fullWidth>Login</Button>
-            </Box>
+           <Box className="container" sx={{ display: 'flex', flexDirection: 'column', marginBottom: 2 }}>
+           <Typography variant="h6" component="div" sx={{ marginBottom: 2 }}></Typography>
+           <TextField label="Email" variant="outlined" fullWidth value={email} onChange={handleEmailChange} inputRef={emailRef} sx={{ marginBottom: 2 }} />
+           <TextField label="Password" type="password" variant="outlined" fullWidth value={password} onChange={handlePasswordChange} inputRef={passwordRef} sx={{ marginBottom: 2 }} />
+           <Button variant="contained" onClick={handleLoginClick} fullWidth>Login</Button>
+         </Box>
+         
           )}
 
           {activeTab === '2' && (

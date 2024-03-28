@@ -1,10 +1,13 @@
-import FlatsTable from '../components/FlatsTable'
-export default function MyFlats () {
-return(
+import FlatsTable from "../components/FlatsTable";
+import Form from "../components/Form";
+import Lista from "../components/Lista";
+export default function MyFlats() {
+  return (
     <>
-        <FlatsTable type={'my-flats'} />
-    
+      
+       <Form />
+       <Lista />
+       
     </>
-)
-
+  );
 }

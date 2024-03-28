@@ -111,6 +111,7 @@ function Navbar() {
                   </Typography>
                 </MenuItem>
                 <MenuItem component={Link} to="/favorites" onClick={handleCloseNavMenu}>
+                  
                   <Typography textAlign="center" sx={{ color: linkColor }}>
                     Favorites
                   </Typography>
@@ -139,7 +140,7 @@ function Navbar() {
               </Button>
               <Button
                 component={Link}
-                to="/myflats"
+                to="/my-flats"
                 sx={{ my: 2, color: linkColor, display: 'block' }}
               >
                 My Flats

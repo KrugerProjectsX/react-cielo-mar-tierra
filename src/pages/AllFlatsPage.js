@@ -1,20 +1,12 @@
 import { FlatCard } from "../components/FlatCard"
+import FlatsTable from "../components/FlatsTable";
 
-
-
-
- const AllFlats =()=>{
-
-
-
-
+export default function AllFlats (){
     return(
-<>
-<FlatCard/>
-</>
+    <>
+        <FlatsTable type={"all-flats"} />
+    </>
 
     )
-
 }
 
-export default AllFlats
