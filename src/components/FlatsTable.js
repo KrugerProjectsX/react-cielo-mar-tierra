@@ -11,6 +11,9 @@ import { db } from "../firebase";
 import { useRef } from 'react';
 import DeleteButton from "../components/DeleteButton";
 import ModalFlat from './ModalFlat';
+import Container from "@mui/material/Container";
+import CardMedia from "@mui/material/CardMedia";
+import {Grid,Card,CardContent,Typography,CardActions,Button,Switch} from "@mui/material";
 
 // @Params: type: "my-flats" | "all-flats" | "favorite-flats"
 export default function FlatsTable({ type }) {
@@ -19,6 +22,7 @@ export default function FlatsTable({ type }) {
     
     console.log(userId);
     const [flats, setFlats] = useState([]);
+    const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
     const getData = async () => {
         if (type === 'my-flats') {
@@ -53,33 +57,36 @@ export default function FlatsTable({ type }) {
     }, []);
 
     return ( 
-        <TableContainer>
-            <Table className="min-w-full divide-y divide-gray-200" aria-label="simple table">
-                <TableHead className="bg-gray-50">
-                    <TableRow>
-                        <TableCell className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">City</TableCell>
-                        <TableCell className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" align="right">Area size</TableCell>
-                        <TableCell className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" align="right">Rent price</TableCell>
-                        <TableCell className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" align="right">Has AC</TableCell>
-                        <TableCell className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" align="right">Date available</TableCell>
-                        <TableCell className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" align="right">Options</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody className="bg-white divide-y divide-gray-200"> 
-                    {flats.map((row) => ( 
-                        <TableRow key={row.id}>
-                            <TableCell className="px-6 py-4 whitespace-nowrap">{row.city}</TableCell>
-                            <TableCell className="px-6 py-4 whitespace-nowrap" >{row.areaSize}</TableCell>
-                            <TableCell className="px-6 py-4 whitespace-nowrap" >{row.rentPrice}</TableCell>
-                            <TableCell className="px-6 py-4 whitespace-nowrap" >{row.hasAc ? 'Yes' : 'No'}</TableCell>
-                            <TableCell className="px-6 py-4 whitespace-nowrap" >{row.dateAvailable}</TableCell>
-                            <TableCell className="px-6 py-4 whitespace-nowrap" >{<ModalFlat id={row.id} setFlag={setFlats}></ModalFlat>}</TableCell>
-                            <TableCell className="px-6 py-4 whitespace-nowrap" ><DeleteButton id={row.id} setFlag={setFlats}></DeleteButton> </TableCell>
-                                                         
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+      <TableContainer>
+      <Table className="min-w-full divide-y divide-gray-200" aria-label="simple table">
+          <TableHead className="bg-gray-50">
+              <TableRow>
+                  <TableCell className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">City</TableCell>
+                  <TableCell className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" align="right">Area size</TableCell>
+                  <TableCell className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" align="right">Rent price</TableCell>
+                  <TableCell className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" align="right">Has AC</TableCell>
+                  <TableCell className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" align="right">Date available</TableCell>
+              </TableRow>
+          </TableHead>
+          <TableBody className="bg-white divide-y divide-gray-200">
+              {flats.map((row) => (
+                  <TableRow key={row.id}>
+                      <TableCell className="px-6 py-4 whitespace-nowrap">{row.city}</TableCell>
+                      <TableCell className="px-6 py-4 whitespace-nowrap" >{row.areaSize}</TableCell>
+                      <TableCell className="px-6 py-4 whitespace-nowrap" >{row.rentPrice}</TableCell>
+                      <TableCell className="px-6 py-4 whitespace-nowrap" >{row.hasAc ? 'Yes' : 'No'}</TableCell>
+                      <TableCell className="px-6 py-4 whitespace-nowrap" >{row.dateAvailable}</TableCell>
+                  </TableRow>
+              ))}
+          </TableBody>
+      </Table>
+  </TableContainer>
+
+
+
+
+
+
+        
     );
 }

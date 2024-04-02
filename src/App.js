@@ -1,31 +1,32 @@
 import React from 'react';
 import './App.css';
 import { Route, Routes } from 'react-router-dom';
-import Home from './pages/HomePage';
+import Home from './pages/Home';
 import MyFlats from './pages/MyFlats';
 import AllFlats from './pages/AllFlatsPage';
 import Navbar from './components/Navbar';
 import Favorites from './Favorites';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
-import Ingreso from './pages/Register';
-import Register from './pages/RegisterPage';
 
+import Register from './pages/Register';
+import ProfileUpdate from "./pages/ProfileUpdate";
+import Users from "./pages/Users";
 
 function App() {
   return (
   <>
-  <Navbar/>
+  
   <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/" element={<Home />} />
-      <Route path="/my-flats" element={<MyFlats />} />
-      <Route path="/all-flats" element={<AllFlats />} />
-      <Route path="/favorites" element={<Favorites />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/ingreso" element={<Ingreso />} />
-      <Route path="/profile" element={<Profile />} />
      
+      <Route path="/" element={<Login />} />
+      <Route path={"/dashboard"} element={<Home/>}  />
+     
+      <Route path="/favorites" element={<Favorites />} />
+      <Route path={"/users"} element={<Users/>}/>
+      <Route path="/profile" element={<Profile />} />
+      <Route path={"/profile/edit"} element={<ProfileUpdate/>}/>
+      <Route path={"/profile/edit/:userId"} element={<ProfileUpdate/>}/>
       <Route path="/register" element={<Register />} />
     </Routes>
   </>
