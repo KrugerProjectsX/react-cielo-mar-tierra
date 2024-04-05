@@ -9,7 +9,7 @@ export default function ProfileUpdate() {
     
     }
     //TODO: verificar si el que actualiza un usuario que no es el mismo sea admin si no mandar null
-
+    
     return (
         <div>
             <Header/>

@@ -4,9 +4,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import MenuTransitions from "./MenuTransitions";
-import {doc, getDoc} from "firebase/firestore";
-import {db} from "../firebase";
-import {getUser, getUserLogged} from "../services/users";
+import {getUserLogged} from "../services/users";
 import { Link } from 'react-router-dom';
 
 export default function Header() {
@@ -36,12 +34,10 @@ export default function Header() {
                     <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
                     </Typography>
                     <div className={'flex items-center justify-center mr-2'}>
-                        <Button className={'text-secondary'}>Home</Button>
-                        {user && (user.role === 'landlord' || user.role === 'admin' ) && <Button className={'text-secondary'}>My Flats</Button>}
-                        <Button className={'text-secondary'}>Favourites</Button>
-                        {user && user.role === 'admin' && (<Link to="/users" className="text-secondary"><Button>Users</Button>
-                            </Link>
-                        )}
+                        {user && user.role === 'admin' && (<Link to="/dashboard" className="text-secondary"><Button>Home</Button></Link>)}
+                        {user && user.role === 'admin' && (<Link to="/my-flats" className="text-secondary"><Button>My Flats</Button></Link>)}
+                        {user && user.role === 'admin' && (<Link to="/my-favorites-flats" className="text-secondary"><Button>Favourites</Button></Link>)}
+                        {user && user.role === 'admin' && (<Link to="/users" className="text-secondary"><Button>Users</Button></Link>)}
                     </div>
                     <MenuTransitions user={user} setUser={setUser}/>
                 </Toolbar>

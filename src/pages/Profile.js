@@ -7,7 +7,6 @@ export default function Profile() {
     return (
         <div>
             <Header/>
-            <h1>Profile</h1>
             <UserForm type={'view'} id={userId}/>
         </div>
     );

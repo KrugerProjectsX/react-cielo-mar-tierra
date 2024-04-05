@@ -46,9 +46,6 @@ export default function LoginForm() {
     });
    
 }
-
-
-
   return (
     <Container maxWidth="xs" sx={{mt: 2}}>
       {error && <Alert severity="error" sx={{my: 2}}>{error}</Alert>}

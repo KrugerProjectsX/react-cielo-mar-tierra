@@ -1,39 +1,14 @@
-import {
-  Box,
-  Button,
-  TextField,
-  Grid,
-  Typography,
-  Snackbar,
-  SnackbarContent,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  Alert,
-  Card,
-  CardMedia,
-  CardContent,
-} from "@mui/material";
-import { useEffect, useRef, useState } from "react";
-import {
-  doc,
-  updateDoc,
-  getDoc,
-  collection,
-  addDoc,
-  getFirestore,
-} from "firebase/firestore";
+import {Box, Button, TextField, Grid, Snackbar, Alert, Card, CardMedia} from "@mui/material";
+import {useEffect, useRef, useState } from "react";
+import {doc, updateDoc, getDoc, collection, addDoc} from "firebase/firestore";
 import { db } from "../firebase";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "../firebase";
-import { convertLength } from "@mui/material/styles/cssUtils";
 
-export default function UserForm({ type }) {
-  let urlImDesc;
-  let pathImg;
+export default function UserForm({ type, userId }) {
+      let urlImDesc;
+      let pathImg;
   const currentDate = new Date().toJSON().slice(0, 10);
-
   const [user, setUser] = useState({
     firstName: "",
     lastName: "",
@@ -47,26 +22,22 @@ export default function UserForm({ type }) {
   const emailRef = useRef("");
   const passwordRef = useRef("");
   const birthDateRef = useRef("");
+  const userTypeRef = useRef('');
   const [roleRef, setRole] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [password, setPassword] = useState("");
-  const id = JSON.parse(localStorage.getItem("user_logged"));
   const userCollection = collection(db, "user"); // Cambio de nombre de la constante
   const storage = getStorage(app);
-  let userTipeRole = user.role;
-  const userTypeRef = useRef(userTipeRole);
-
-  const handleRoleChange = (event) => {
-    console.log(event.target.value);
-
-    setRole(event.target.value);
-  };
-
-  let refe = null;
-  if (id) {
-    refe = doc(db, "user", id);
+  
+  let  rf = null;
+  if (userId == null && type !== 'create') {
+       userId = JSON.parse(localStorage.getItem('user_logged'));
   }
+  if ( userId && type !== 'create'){
+      rf = doc(db, "user", userId);
+  }
+
   const today = new Date();
   const minBirthDate = new Date(
     today.getFullYear() - 18,
@@ -83,18 +54,20 @@ export default function UserForm({ type }) {
     .toISOString()
     .split("T")[0];
   let nameButton = "Create";
+
   if (type === "update") {
     nameButton = "Update";
   }
 
   const getUserData = async () => {
-    const dataUser = await getDoc(refe);
+    const dataUser = await getDoc(rf);
     const responseUser = { ...dataUser.data() };
     setUser(responseUser);
+    setRole(responseUser.role);
     setUserLoaded(true);
   };
   const processData = async () => {
-    if (type === "view" || type === "update") {
+    if (type === 'view' || type === 'update') {
       await getUserData();
     } else {
       setUserLoaded(true);
@@ -106,25 +79,25 @@ export default function UserForm({ type }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (
-      firstNameRef.current.value.trim() === "" ||
-      lastNameRef.current.value.trim() === "" ||
-      emailRef.current.value.trim() === "" ||
-      birthDateRef.current.value.trim() === "" 
-    ) {
-      setAlertMessage("Por favor, complete todos los campos");
-      setIsAlertOpen(true);
-      return;
-    }
+        if (
+          firstNameRef.current.value.trim() === "" ||
+          lastNameRef.current.value.trim() === "" ||
+          emailRef.current.value.trim() === "" ||
+          birthDateRef.current.value.trim() === "" 
+        ) {
+          setAlertMessage("Por favor, complete todos los campos");
+          setIsAlertOpen(true);
+          return;
+        }
 
-    let urlImDesc;
-    if (pathImg === undefined || pathImg === "") {
-      // Si no hay una imagen seleccionada, usar una URL de imagen predeterminada
-      urlImDesc =
-        "https://firebasestorage.googleapis.com/v0/b/flat-project-1ac7a.appspot.com/o/documentos%2Fperson.png?alt=media&token=6db5d670-b6de-479e-b9ea-a60ed3ce2497";
-    } else {
-      urlImDesc = pathImg;
-    }
+       
+        if (pathImg === undefined || pathImg === "") {
+          // Si no hay una imagen seleccionada, usar una URL de imagen predeterminada
+          urlImDesc =
+            "https://firebasestorage.googleapis.com/v0/b/flat-project-1ac7a.appspot.com/o/documentos%2Fperson.png?alt=media&token=6db5d670-b6de-479e-b9ea-a60ed3ce2497";
+        } else {
+          urlImDesc = pathImg;
+        }
 
     let userSend = {
       firstName: firstNameRef.current.value,
@@ -134,6 +107,7 @@ export default function UserForm({ type }) {
       role: userTypeRef.current.value,
       imgPerson: urlImDesc,
     };
+
     //console.log("Datos del usuario a enviar:", userSend);
     if (type === "create") {
       userSend = { ...userSend, password: passwordRef.current.value };
@@ -153,7 +127,7 @@ export default function UserForm({ type }) {
 
     if (type === "update") {
       setUser(userSend); // Actualiza el estado con los nuevos datos
-      await updateDoc(refe, userSend); // Envía los nuevos datos al servidor
+      await updateDoc(rf, userSend); // Envía los nuevos datos al servidor
       setAlertMessage("Usuario actualizado"); // Notifica al usuario que se actualizó la información
       setIsAlertOpen(true); // Abre la alerta
     }
@@ -195,8 +169,7 @@ export default function UserForm({ type }) {
   };
 
   const fileHandler = async (e) => {
-    //detectar el archivo
-    const archivoI = e.target.files[0];
+  const archivoI = e.target.files[0];
     //cargar esto al storage
     const refArchivo = ref(storage, `documentos/${archivoI.name}`);
     await uploadBytes(refArchivo, archivoI);
@@ -212,7 +185,7 @@ export default function UserForm({ type }) {
       sx={{
         display: "flex",
         flexDirection: "column",
-        alignItems: "center", // Centra horizontalmente
+        alignItems: "center", 
       }}
     >
       {userLoaded ? (
@@ -237,7 +210,7 @@ export default function UserForm({ type }) {
                   style={{
                     borderRadius: "5px",
                     maxHeight: 100, // Limitar la altura máxima de la imagen
-                    maxWidth: "50%", // Ajustar el ancho máximo de la imagen
+                    maxWidth: "100%", // Ajustar el ancho máximo de la imagen
                     objectFit: "cover",
                     display: "block", // Esto asegura que la imagen sea un bloque y se centre correctamente
                     margin: "auto", // Esto centra la imagen horizontalmente
@@ -303,31 +276,41 @@ export default function UserForm({ type }) {
                 type="date"
                 inputRef={birthDateRef}
                 inputProps={{ min: maxBirthDate, max: minBirthDate }}
-                defaultValue={currentDate}
+                defaultValue={user.birthDate}
                 variant="outlined"
                 className="w-full"
                 sx={{ marginBottom: "8px" }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <Box sx={{ minWidth: 120 }}>
-              <TextField
-                        select
-                        label="User Type"
-                        variant="outlined"
-                        SelectProps={{ native: true }}
-                        className="w-full mb-5"
-                        inputRef={userTypeRef}
-                    >
-                        <option key="landlord" value="landlord">landlord</option>
-                        <option key="renter" value="renter">renter</option>
-                    </TextField>
-              </Box>
+            <Box sx={{ minWidth: 150 }}>
+        {(type === "create"|| type === "update") ? (
+            <TextField
+                select
+                label="User Type"
+                variant="outlined"
+                SelectProps={{ native: true }}
+                className="w-full mb-5"
+                inputRef={userTypeRef}
+            >
+                <option key="landlord" value="landlord">landlord</option>
+                <option key="renter" value="renter">renter</option>
+            </TextField>
+        ) : (
+            <TextField
+                defaultValue={user.role}
+                label="User Type"
+                variant="outlined"
+                className="w-full mb-5"
+                disabled
+            />
+        )}
+    </Box>
             </Grid>
 
            {type === "update" && (
               <Grid item xs={2} sm={2}>
-                <div className="form-group">
+                <div className="form-group">  
                   <input
                     type="file"
                     id="file"
@@ -337,11 +320,6 @@ export default function UserForm({ type }) {
                   />
                 </div>
               </Grid>
-
-
-
-
-
             )}
 
             {type !== "view" && (

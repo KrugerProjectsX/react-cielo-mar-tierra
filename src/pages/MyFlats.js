@@ -1,13 +1,12 @@
 import FlatsTable from "../components/FlatsTable";
-import Form from "../components/Form";
-import Lista from "../components/Lista";
+import Header from "../components/Header";
+import RegisterFlat from "./RegisterFlat";
 export default function MyFlats() {
   return (
     <>
+      <Header/>
+      <RegisterFlat />
       
-       <Form />
-       <Lista />
-       
     </>
   );
 }
