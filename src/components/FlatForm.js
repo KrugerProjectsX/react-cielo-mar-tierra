@@ -1,17 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
-import { doc, getDoc, collection, addDoc } from "firebase/firestore";
+import { doc, getDoc, collection, addDoc, updateDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app, db } from "../firebase";
 import { Box, Switch } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-import Card from '@mui/material/Card';
-import CardMedia from '@mui/material/CardMedia';
 
-function FlatForm({ type, id }) {
+function FlatForm({ type, id }) { console.log(type); console.log(id)
   let urlImDesc;
   let pathImg;
-  const [flatLoaded, setFlatLoaded] = useState(false);
   const currentDate = new Date().toJSON().slice(0, 10);
   const [flat, setFlat] = useState({
     city: '',
@@ -23,7 +20,7 @@ function FlatForm({ type, id }) {
     streetNumber: 0,
     yearBuilt: 0,
   });
-
+  const [flatLoaded, setFlatLoaded] = useState(false);
   const navigate = useNavigate();
   const cityRef = useRef('');
   const streetNameRef = useRef('');
@@ -40,12 +37,14 @@ function FlatForm({ type, id }) {
   const storage = getStorage(app);
 
   let refFlat = null;
+  if (id == null && type !== 'create') {
+  id = JSON.parse(localStorage.getItem('user_logged'));
+}
   if (id && type !== 'create') {
     refFlat = doc(db, "flat", id);
   }
 
-
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
     const hasAC = hasACRef.current.checked ? "Yes" : "No";
     if (
@@ -99,12 +98,20 @@ function FlatForm({ type, id }) {
       yearBuiltRef.current.value = "";
       navigate('/flats', { replace: false });
     }
+
+    if (type === 'update') {
+      await updateDoc(refFlat, flatSend);
+    }
   }
+
+  let nameButton = 'Create';
+    if (type === 'update') {
+        nameButton = 'Update'
+    }
 
   const getFlatData = async () => {
     const dataFlat = await getDoc(refFlat);
     const responseFlat = { ...dataFlat.data() };
-    console.log(responseFlat)
     setFlat(responseFlat);
     setFlatLoaded(true);
   }
@@ -131,12 +138,12 @@ function FlatForm({ type, id }) {
   }
 
   return (
-    <>
+    
       <form class="max-w-md mx-auto my-4" onSubmit={handleSubmit}>
+        {flatLoaded ? (
+        <> 
 
-        {flatLoaded ? <>
-
-          {type !== "create" && (
+          {type !== "create" && type !== "update" && (
             <div class="max-w-md w-full lg:max-w-full lg:flex">
               <div class="h-48 lg:h-auto lg:w-48 flex-none bg-cover rounded-t lg:rounded-t-none lg:rounded-l text-center overflow-hidden" style={{ backgroundImage: `url(${flat.imgFlat})` }} title="Woman holding a mug"></div>
               <div class="border border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
@@ -166,11 +173,11 @@ function FlatForm({ type, id }) {
               </div>
             </div>
           )}
-          {type === 'create' && (
+          {(type === 'create' || type === 'update') && ( 
             <div class="grid gap-6 mb-6 md:grid-cols-2">
-              <div>
+              <div> 
                 <label for="city" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">City</label>
-                <input disabled={type === 'view'} type="text" id="city" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" ref={cityRef} defaultValue={flat.city} variant="outlined" placeholder="City" required />
+                <input disabled={type === 'view'} type="text" id="city" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" inputRef={cityRef} value={flat.city} variant="outlined" placeholder="City" required />
               </div>
               <div>
                 <label for="streetName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Street name</label>
@@ -209,16 +216,14 @@ function FlatForm({ type, id }) {
               <div>
             </div>
             <div className="flex justify-center mt-4"  >
-                {type === 'create' && <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-7.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add Flat</button>}
+                {type !== 'view' && <button type='submit' className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">{nameButton}</button>}
             </div>
-          </div>
-          
-          )}
-        </> : <p>Loading...</p>
-        }
-      </form>
-
-    </>
+          </div>)}
+        </>
+      ):(<p>Loading...</p>)
+    }
+ </form>
+    
   );
 }
 

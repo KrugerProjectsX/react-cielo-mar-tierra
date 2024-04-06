@@ -128,7 +128,7 @@ export default function UserForm({ type, userId }) {
     if (type === "update") {
       setUser(userSend); // Actualiza el estado con los nuevos datos
       await updateDoc(rf, userSend); // Envía los nuevos datos al servidor
-      setAlertMessage("Usuario actualizado"); // Notifica al usuario que se actualizó la información
+      setAlertMessage("User update"); // Notifica al usuario que se actualizó la información
       setIsAlertOpen(true); // Abre la alerta
     }
   };
