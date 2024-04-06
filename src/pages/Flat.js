@@ -4,7 +4,7 @@ import FlatForm from "../components/FlatForm";
 
 export default function Flat() {
     let { id }  = useParams();
-    
+    console.log(id)
     return (
         <div>
             <Header/>

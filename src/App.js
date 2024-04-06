@@ -29,7 +29,6 @@ function App() {
       <Route path="/profile" element={<Profile />} />
       <Route path={"/profile/edit"} element={<ProfileUpdate/>}/>
       <Route path={"/profile/edit/:userId"} element={<ProfileUpdate/>}/>
-     
       <Route path="/registerFlat" element={<RegisterFlat />}/>
       <Route path={"/flat/:id"} element={<Flat/>} />
       <Route path={"/flats"} element={<Flats/>}  />

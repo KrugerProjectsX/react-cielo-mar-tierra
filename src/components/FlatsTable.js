@@ -25,8 +25,7 @@ export default function FlatsTable({ type }) {
             const data = await getDocs(search);
             const rows = data.docs.map((item) => {
                 const flatData = item.data();
-                const formattedDateAvailable = flatData.dateAvailable ? new Date(flatData.dateAvailable.seconds * 1000).toLocaleDateString() : '';
-                return { ...item.data(), dateAvailable: formattedDateAvailable,id: item.id }
+                return { ...item.data(), dateAvailable: flatData.dateAvailable,id: item.id }
             });
 
             setFlats(rows);
@@ -38,12 +37,11 @@ export default function FlatsTable({ type }) {
                 const search = query(refFav, where("userId", "==",userId ), where('flatId','==',item.id));
                 const dataFav = await getDocs(search);
                 const flatData = item.data();
-                const formattedDateAvailable = flatData.dateAvailable ? new Date(flatData.dateAvailable.seconds * 1000).toLocaleDateString() : '';
                 let favorite =false;
                 if(dataFav.docs.length > 0){
                     favorite = dataFav.docs[0].id;
                 }
-                const flatsWithFav = {...item.data(), id: item.id, dateAvailable: formattedDateAvailable, favorite: favorite};
+                const flatsWithFav = {...item.data(), id: item.id, dateAvailable: flatData.dateAvailable, favorite: favorite};
                 allFlats.push(flatsWithFav)
             }
             setFlats(allFlats);
@@ -114,7 +112,7 @@ export default function FlatsTable({ type }) {
                             </TableCell> }
                             <TableCell className="px-6 py-4 whitespace-nowrap">
                                 <Button href={`/flat/${row.id}`} >View</Button>
-                                {type === 'my-flats' && <Button href={`/flats/edit/${row.id}`} >Edit</Button>}
+                                {type === 'my-flats' && <Button href={`/flat/edit/${row.id}`} >Edit</Button>}
                             </TableCell>
                   </TableRow>
               ))}

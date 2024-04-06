@@ -104,6 +104,7 @@ function FlatForm({ type, id }) {
   const getFlatData = async () => {
     const dataFlat = await getDoc(refFlat);
     const responseFlat = { ...dataFlat.data() };
+    console.log(responseFlat)
     setFlat(responseFlat);
     setFlatLoaded(true);
   }
@@ -146,7 +147,15 @@ function FlatForm({ type, id }) {
                   Flat
                 </p>
                 <div class="text-gray-900 font-bold text-xl mb-2">Details</div>
-                <p class="text-gray-700 text-base"><strong>City:</strong> {flat.city} <br /> <strong>Street name:</strong> {flat.streetName} <br /> <strong>Street number:</strong> {flat.streetNumber} <br /><strong>Area size:</strong> {flat.areaSize} <br /><strong>Date available:</strong> {flat.dateAvailable} <br /><strong>Has AC:</strong> {flat.hasAC}</p>
+                <p class="text-gray-700 text-base">
+                  <strong>City:</strong> 
+                  {flat.city} <br /> 
+                  <strong>Street name:</strong> {flat.streetName} <br /> 
+                  <strong>Street number:</strong> {flat.streetNumber} <br />
+                  <strong>Area size:</strong> {flat.areaSize} <br />
+                  <strong>Date available:</strong> {flat.dateAvailable} <br />
+                  <strong>Has AC:</strong> {flat.hasAC}
+                  </p>
                 <div class="flex items-center">
                   <img class="w-10 h-10 rounded-full mr-4" src={flat.imgFlat} alt="Avatar of Jonathan Reinink"></img>
                   <div class="text-sm">
