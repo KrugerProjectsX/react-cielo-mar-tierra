@@ -1,21 +1,19 @@
 import * as React from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import { useEffect, useState } from "react";
 import { getDocs, query, where, collection,doc,getDoc, addDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import {Button} from "@mui/material";
-import { none, butt, miter, nonzero, strokeLinejoin,rgb  } from 'svg.js';
-
-
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import FilterBar from './FlatFilter';
+import { Box, Typography } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 // @Params: type: "my-flats" | "all-flats" | "favorite-flats"
-export default function FlatsTable({ type }) {
-    const none = 'none';
+export default function FlatsTable({ type , user }) {
+;
    
     
 
@@ -27,6 +25,11 @@ export default function FlatsTable({ type }) {
     const [flag, setFlag ] = useState(false);
 
     const getData = async () => {
+
+
+
+
+        
         if (type === 'my-flats') {
             const search = query(ref, where("user", "==", userId));
             const data = await getDocs(search);
@@ -44,12 +47,11 @@ export default function FlatsTable({ type }) {
                 const search = query(refFav, where("userId", "==",userId ), where('flatId','==',item.id));
                 const dataFav = await getDocs(search);
                 const flatData = item.data();
-                const formattedDateAvailable = flatData.dateAvailable ? new Date(flatData.dateAvailable.seconds * 1000).toLocaleDateString() : '';
                 let favorite =false;
                 if(dataFav.docs.length > 0){
                     favorite = dataFav.docs[0].id;
                 }
-                const flatsWithFav = {...item.data(), id: item.id, dateAvailable: formattedDateAvailable, favorite: favorite};
+                const flatsWithFav = {...item.data(), id: item.id, dateAvailable: flatData.dateAvailable, favorite: favorite};
                 allFlats.push(flatsWithFav)
             }
             setFlats(allFlats);
@@ -63,8 +65,7 @@ export default function FlatsTable({ type }) {
                 const refFlat = doc(db, "flat", item.data().flatId);
                 const dataFlat = await getDoc(refFlat);
                 const flatData = item.data();
-                const formattedDateAvailable = flatData.dateAvailable ? new Date(flatData.dateAvailable.seconds * 1000).toLocaleDateString() : '';
-                allFlats.push({...dataFlat.data(), id: dataFlat.id, dateAvailable: formattedDateAvailable, favorite: item.id});
+                allFlats.push({...dataFlat.data(), id: dataFlat.id, favorite: item.id});
             }
 
             setFlats(allFlats);
@@ -83,71 +84,76 @@ export default function FlatsTable({ type }) {
         setFlag(!flag);
     }
 
+    const deleteFlat = async (id) => {
+        try {
+            await deleteDoc(doc(db, "flat", id));
+            setFlag(!flag); // Forzar la recarga de datos después de la eliminación
+        } catch (error) {
+            console.error("Error al eliminar el flat:", error);
+        }
+    };
+
     useEffect(() => {
         getData();
     }, [flag]);
 
      return ( 
         <>
-        <br />
-        <div className="flex flex-wrap justify-center">
-        {flats.map((row, index) => ( 
-        <div key={index} className="m-4">
-            <div class="profile-card w-[250px] rounded-md shadow-xl overflow-hidden z-[100] relative cursor-pointer snap-start shrink-0 bg-white flex flex-col items-center justify-center gap-3 transition-all duration-300 group h-[460px]">
-            <div class="avatar w-full pt-5 flex items-center justify-center flex-col gap-1">
-            <div class="avatar w-full pt-5 flex items-center justify-center flex-col gap-1">
-            <div class="img_container w-full flex items-center justify-center relative z-40 after:absolute after:h-[6px] after:w-full after:bg-[#58b0e0] after:top-4 after:group-hover:size-[1%] after:delay-300 after:group-hover:delay-0 after:group-hover:transition-all after:group-hover:duration-300 after:transition-all after:duration-300 before:absolute before:h-[6px] before:w-full before:bg-[#58b0e0] before:bottom-4 before:group-hover:size-[1%] before:delay-300 before:group-hover:delay-0 before:group-hover:transition-all before:group-hover:duration-300 before:transition-all before:duration-300">
-                <img src={row.imgFlat} alt="Avatar" class="w-64 h-36 object-cover z-40 border-4 border-white rounded-md group-hover:border-8 group-hover:transition-all group-hover:duration-300 transition-all duration-300" id="avatar" />
-                <div class="absolute bg-[#BCDAF9] z-10 w-full h-full group-hover:w-0 group-hover:h-0 group-hover:transition-all group-hover:duration-300 transition-all duration-300 delay-700 group-hover:delay-0"></div>
-            </div>
-        </div>
-        </div>
-               <div class="headings *:text-center *:leading-4 mt-[-20px]" >
-                    <p class="text-sm font-serif font-semibold text-[#434955]">{row.city}</p>
-                    <p class="text-sm font-semibold text-[#434955] mt-[-10px]"><strong>Precio: </strong>${row.rentPrice}</p>
-                </div>
-                <div class="w-full items-center justify-center flex mt-[-40px]">
-                    <ul class="flex flex-col items-start gap-1 has-[:last]:border-b-0 *:inline-flex :gap-1 :items-center :justify-center :border-b-[1.5px] *:border-b-stone-700:border-dotted *:text-xs *:font-semibold *:text-[#434955] pb-3">
-                        <li>
-                            <div>
-                                <div style={{ display: 'block' }}>
-                                    <p><strong>Area Size: </strong>{row.areaSize}</p>
-                                </div>
-                                <div style={{ display: 'block' }}>
-                                    <p><strong>Date Available: </strong>{row.dateAvailable}</p>
-                                </div>
-                                <div style={{ display: 'block' }}>
-                                    <p><strong>Has AC: </strong>{row.hasAc ? 'Yes' : 'No'}</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="flex justify-center"> 
-                                <div style={{ display: 'block' }}>
-                                <Button href={`/flat/${row.id}`} >View</Button>
-                                {type === 'my-flats' && <Button href={`/flat/edit/${row.id}`} >Edit</Button>} 
-                                </div>
-                            </div>
-                            <div class="flex justify-center">
-                                {(type === 'all-flats'|| type=== 'favorite-flats') && <div style={{ display: 'block' }}>
-                                    {!row.favorite && <Button onClick={()=>addFavorite(row.id)}>Add Favorite</Button>}
-                                    {row.favorite && <Button onClick={()=>removeFavorite(row.favorite)}>Remove Favorite</Button>}
-                                </div> }
-                            
-                            </div>
-                        </li>
-                      
-                    </ul>
-                </div>
-                <hr class="w-full group-hover:h-5 h-3 bg-[#58b0e0] group-hover:transition-all group-hover:duration-300 transition-all duration-300 mt-[-30px]" />
-        </div>
-    </div>
-         ))}  
-
-</div>
-
-  </>
-
- );
- 
+        {type === 'all-flats' && <FilterBar flats={flats} setFlats={setFlats} />}
+        <Box display="flex" justifyContent="center" flexWrap="wrap">
+          {flats.map((row, index) => (
+            <Box key={index} m={4} maxWidth="360px">
+              <Box
+                bgcolor="white"
+                boxShadow={3}
+                borderRadius={4}
+                overflow="hidden"
+              >
+                <img
+                  src={row.imgFlat}
+                  alt="flat"
+                  style={{ width: "100%", height: "auto", objectFit: "cover" }}
+                />
+                <Box p={2}>
+                  <Typography variant="h6" gutterBottom>{row.city}</Typography>
+                  <Typography variant="body1">Precio: ${row.rentPrice}</Typography>
+                </Box>
+                <Box p={2} borderTop={1} borderColor="grey.200">
+                  <Typography variant="body2">Area Size: {row.areaSize}</Typography>
+                  <Typography variant="body2">Disponible: {row.dateAvailable}</Typography>
+                </Box>
+                <Box p={2} borderTop={1} borderColor="grey.200">
+                  <Typography variant="body2">AC: {row.hasAC ? 'Yes' : 'No'}</Typography>
+                  <Box>
+                    <Button href={`/flat/${row.id}`} variant="text">
+                      <VisibilityIcon style={{ color: 'black' }} />
+                    </Button>
+                    {type === 'my-flats' && (
+                      <Button href={`/flat/edit/${row.id}`} variant="text">
+                        <ModeEditIcon style={{ color: 'black' }} />
+                      </Button>
+                    )}
+                    {!row.favorite && (
+                      <Button onClick={() => addFavorite(row.id)} variant="text">
+                        <FavoriteBorderIcon style={{ color: 'black' }} />
+                      </Button>
+                    )}
+                    {row.favorite && (
+                      <Button onClick={() => removeFavorite(row.favorite)} variant="text">
+                        <FavoriteIcon sx={{ color: 'red' }} />
+                      </Button>
+                    )}
+                    {user && (user.role === 'admin' || user.role === 'landlord') && (
+                      <Button onClick={() => deleteFlat(row.id)} variant="text">
+                        <DeleteIcon style={{ color: 'black' }} />
+                      </Button>
+                    )}
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+          ))}
+        </Box>
+      </>
+    );
 }

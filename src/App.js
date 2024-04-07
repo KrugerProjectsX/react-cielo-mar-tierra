@@ -20,8 +20,8 @@ function App() {
   <>
   
   <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path={"/dashboard"} element={<Home/>}  />
+      <Route path="/" element={<Login  />} />
+      <Route path={"/dashboard"} element={<Home />}  />
       <Route path={"/my-flats"} element={<MyFlats/>}/>
       <Route path={"/my-favorites-flats"} element={<FlatsFavorites/>}/>
       <Route path={"/users"} element={<Users/>}/>

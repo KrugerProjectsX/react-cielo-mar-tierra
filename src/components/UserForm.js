@@ -1,13 +1,13 @@
-import {Box, Button, TextField, Grid, Snackbar, Alert, Card, CardMedia} from "@mui/material";
-import {useEffect, useRef, useState } from "react";
-import {doc, updateDoc, getDoc, collection, addDoc} from "firebase/firestore";
+import { Box, Button, TextField, Grid, Snackbar, Alert, Card, CardMedia, Typography } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
+import { doc, updateDoc, getDoc, collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "../firebase";
 
 export default function UserForm({ type, userId }) {
-      let urlImDesc;
-      let pathImg;
+  let urlImDesc;
+  let pathImg;
   const currentDate = new Date().toJSON().slice(0, 10);
   const [user, setUser] = useState({
     firstName: "",
@@ -27,32 +27,20 @@ export default function UserForm({ type, userId }) {
   const [alertMessage, setAlertMessage] = useState("");
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [password, setPassword] = useState("");
-  const userCollection = collection(db, "user"); // Cambio de nombre de la constante
+  const userCollection = collection(db, "user");
   const storage = getStorage(app);
-  
-  let  rf = null;
+
+  let rf = null;
   if (userId == null && type !== 'create') {
-       userId = JSON.parse(localStorage.getItem('user_logged'));
+    userId = JSON.parse(localStorage.getItem('user_logged'));
   }
-  if ( userId && type !== 'create'){
-      rf = doc(db, "user", userId);
+  if (userId && type !== 'create') {
+    rf = doc(db, "user", userId);
   }
 
   const today = new Date();
-  const minBirthDate = new Date(
-    today.getFullYear() - 18,
-    today.getMonth(),
-    today.getDate()
-  )
-    .toISOString()
-    .split("T")[0];
-  const maxBirthDate = new Date(
-    today.getFullYear() - 120,
-    today.getMonth(),
-    today.getDate()
-  )
-    .toISOString()
-    .split("T")[0];
+  const minBirthDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate()).toISOString().split("T")[0];
+  const maxBirthDate = new Date(today.getFullYear() - 120, today.getMonth(), today.getDate()).toISOString().split("T")[0];
   let nameButton = "Create";
 
   if (type === "update") {
@@ -66,6 +54,7 @@ export default function UserForm({ type, userId }) {
     setRole(responseUser.role);
     setUserLoaded(true);
   };
+  
   const processData = async () => {
     if (type === 'view' || type === 'update') {
       await getUserData();
@@ -73,31 +62,30 @@ export default function UserForm({ type, userId }) {
       setUserLoaded(true);
     }
   };
+
   useEffect(() => {
     processData();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-        if (
-          firstNameRef.current.value.trim() === "" ||
-          lastNameRef.current.value.trim() === "" ||
-          emailRef.current.value.trim() === "" ||
-          birthDateRef.current.value.trim() === "" 
-        ) {
-          setAlertMessage("Por favor, complete todos los campos");
-          setIsAlertOpen(true);
-          return;
-        }
+    if (
+      firstNameRef.current.value.trim() === "" ||
+      lastNameRef.current.value.trim() === "" ||
+      emailRef.current.value.trim() === "" ||
+      birthDateRef.current.value.trim() === ""
+    ) {
+      setAlertMessage("Por favor, complete todos los campos");
+      setIsAlertOpen(true);
+      return;
+    }
 
-       
-        if (pathImg === undefined || pathImg === "") {
-          // Si no hay una imagen seleccionada, usar una URL de imagen predeterminada
-          urlImDesc =
-            "https://firebasestorage.googleapis.com/v0/b/flat-project-1ac7a.appspot.com/o/documentos%2Fperson.png?alt=media&token=6db5d670-b6de-479e-b9ea-a60ed3ce2497";
-        } else {
-          urlImDesc = pathImg;
-        }
+    if (pathImg === undefined || pathImg === "") {
+      urlImDesc =
+        "https://firebasestorage.googleapis.com/v0/b/flat-project-1ac7a.appspot.com/o/documentos%2Fperson.png?alt=media&token=6db5d670-b6de-479e-b9ea-a60ed3ce2497";
+    } else {
+      urlImDesc = pathImg;
+    }
 
     let userSend = {
       firstName: firstNameRef.current.value,
@@ -108,13 +96,11 @@ export default function UserForm({ type, userId }) {
       imgPerson: urlImDesc,
     };
 
-    //console.log("Datos del usuario a enviar:", userSend);
     if (type === "create") {
       userSend = { ...userSend, password: passwordRef.current.value };
-      await addDoc(userCollection, userSend); // Cambio a userCollection
+      await addDoc(userCollection, userSend);
       setAlertMessage("Usuario creado");
       setIsAlertOpen(true);
-      // Limpiar campos después de crear
       firstNameRef.current.value = "";
       lastNameRef.current.value = "";
       emailRef.current.value = "";
@@ -126,10 +112,10 @@ export default function UserForm({ type, userId }) {
     }
 
     if (type === "update") {
-      setUser(userSend); // Actualiza el estado con los nuevos datos
-      await updateDoc(rf, userSend); // Envía los nuevos datos al servidor
-      setAlertMessage("User update"); // Notifica al usuario que se actualizó la información
-      setIsAlertOpen(true); // Abre la alerta
+      setUser(userSend);
+      await updateDoc(rf, userSend);
+      setAlertMessage("User update");
+      setIsAlertOpen(true);
     }
   };
 
@@ -169,179 +155,183 @@ export default function UserForm({ type, userId }) {
   };
 
   const fileHandler = async (e) => {
-  const archivoI = e.target.files[0];
-    //cargar esto al storage
+    const archivoI = e.target.files[0];
     const refArchivo = ref(storage, `documentos/${archivoI.name}`);
     await uploadBytes(refArchivo, archivoI);
-    //obtener la url de la imagen
     pathImg = await getDownloadURL(refArchivo);
   };
 
   return (
-    <Box
+    <>
+      <Box
+      bgcolor={'rgba(255, 255, 255, 0.5)'}
       component="form"
       onSubmit={handleSubmit}
       className="max-w-md mx-auto p-4 border rounded"
       sx={{
         display: "flex",
         flexDirection: "column",
-        alignItems: "center", 
-      }}
-    >
-      {userLoaded ? (
-        <>
-          {type !== "create" && (
-            <Card
-              sx={{ maxWidth: 200 }}
-              style={{ padding: "10px", marginBottom: "30px" }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  height="100"
-                  image={user.imgPerson}
-                  alt="Person"
-                  style={{
-                    borderRadius: "5px",
-                    maxHeight: 100, // Limitar la altura máxima de la imagen
-                    maxWidth: "100%", // Ajustar el ancho máximo de la imagen
-                    objectFit: "cover",
-                    display: "block", // Esto asegura que la imagen sea un bloque y se centre correctamente
-                    margin: "auto", // Esto centra la imagen horizontalmente
-                  }}
-                />
-              </div>
-            </Card>
-          )}
+        alignItems: "center",
+        }}
+      >
 
-          <Grid container spacing={2} sx={{ maxWidth: "100%", overflow: "auto" }}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                disabled={type === "view"}
-                label="First Name"
-                inputRef={firstNameRef}
-                defaultValue={user.firstName}
-                variant="outlined"
-                className="w-full"
-                sx={{ marginBottom: "2px" }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                disabled={type === "view"}
-                label="Last Name"
-                inputRef={lastNameRef}
-                defaultValue={user.lastName}
-                variant="outlined"
-                className="w-full"
-                sx={{ marginBottom: "2px" }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                disabled={type === "view"}
-                type="email"
-                label="Email"
-                inputRef={emailRef}
-                defaultValue={user.email}
-                variant="outlined"
-                className="w-full"
-                sx={{ marginBottom: "2px" }}
-                onChange={handleEmailChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              {type === "create" && (
+        {userLoaded ? (
+          <>
+            {type !== "create" && (
+              <Card
+                sx={{ maxWidth: 200 }}
+                style={{ padding: "10px", marginBottom: "30px" }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    height="100"
+                    image={user.imgPerson}
+                    alt="Person"
+                    style={{
+                      borderRadius: "5px",
+                      maxHeight: 100,
+                      maxWidth: "100%",
+                      objectFit: "cover",
+                      display: "block",
+                      margin: "auto",
+                    }}
+                  />
+                </div>
+              </Card>
+            )}
+
+            <Grid container spacing={2} sx={{ maxWidth: "100%", overflow: "auto" }}>
+              <Grid item xs={12} sm={6}>
                 <TextField
-                  type={"password"}
-                  label="Password"
-                  inputRef={passwordRef}
+                  disabled={type === "view"}
+                  label="First Name"
+                  inputRef={firstNameRef}
+                  defaultValue={user.firstName}
                   variant="outlined"
                   className="w-full"
                   sx={{ marginBottom: "2px" }}
-                  onChange={handlePasswordChange}
                 />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  disabled={type === "view"}
+                  label="Last Name"
+                  inputRef={lastNameRef}
+                  defaultValue={user.lastName}
+                  variant="outlined"
+                  className="w-full"
+                  sx={{ marginBottom: "2px" }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  disabled={type === "view"}
+                  type="email"
+                  label="Email"
+                  inputRef={emailRef}
+                  defaultValue={user.email}
+                  variant="outlined"
+                  className="w-full"
+                  sx={{ marginBottom: "2px" }}
+                  onChange={handleEmailChange}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                {type === "create" && (
+                  <TextField
+                    type={"password"}
+                    label="Password"
+                    inputRef={passwordRef}
+                    variant="outlined"
+                    className="w-full"
+                    sx={{ marginBottom: "2px" }}
+                    onChange={handlePasswordChange}
+                  />
+                )}
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  disabled={type === "view"}
+                  label="Birth Date"
+                  type="date"
+                  inputRef={birthDateRef}
+                  inputProps={{ min: maxBirthDate, max: minBirthDate }}
+                  defaultValue={user.birthDate}
+                  variant="outlined"
+                  className="w-full"
+                  sx={{ marginBottom: "8px" }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Box sx={{ minWidth: 150 }}>
+                  {(type === "create" || type === "update") ? (
+                    <TextField
+                      select
+                      label="User Type"
+                      variant="outlined"
+                      SelectProps={{ native: true }}
+                      className="w-full mb-5"
+                      inputRef={userTypeRef}
+                    >
+                      <option key="landlord" value="landlord">landlord</option>
+                      <option key="renter" value="renter">renter</option>
+                    </TextField>
+                  ) : (
+                    <TextField
+                      defaultValue={user.role}
+                      label="User Type"
+                      variant="outlined"
+                      className="w-full mb-5"
+                      disabled
+                    />
+                  )}
+                </Box>
+              </Grid>
+
+              {type === "update" && (
+                <Grid item xs={2} sm={2}>
+                  <div className="form-group">
+                    <input
+                      type="file"
+                      id="file"
+                      placeholder="Agregar imagen"
+                      className="form-control"
+                      onChange={fileHandler}
+                    />
+                  </div>
+                </Grid>
+              )}
+
+              {type !== "view" && (
+                <Button  type="submit" variant="contained" sx={{ backgroundColor: 'black', marginTop: '60px', marginX:'auto'}}>
+                  {nameButton}
+                </Button>
               )}
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                disabled={type === "view"}
-                label="Birth Date"
-                type="date"
-                inputRef={birthDateRef}
-                inputProps={{ min: maxBirthDate, max: minBirthDate }}
-                defaultValue={user.birthDate}
-                variant="outlined"
-                className="w-full"
-                sx={{ marginBottom: "8px" }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-            <Box sx={{ minWidth: 150 }}>
-        {(type === "create"|| type === "update") ? (
-            <TextField
-                select
-                label="User Type"
-                variant="outlined"
-                SelectProps={{ native: true }}
-                className="w-full mb-5"
-                inputRef={userTypeRef}
+
+            <Snackbar
+              open={isAlertOpen}
+              autoHideDuration={6000}
+              onClose={handleAlertClose}
             >
-                <option key="landlord" value="landlord">landlord</option>
-                <option key="renter" value="renter">renter</option>
-            </TextField>
+              <Alert onClose={handleAlertClose} severity="error">
+                {alertMessage}
+              </Alert>
+            </Snackbar>
+          </>
         ) : (
-            <TextField
-                defaultValue={user.role}
-                label="User Type"
-                variant="outlined"
-                className="w-full mb-5"
-                disabled
-            />
+          <Typography variant="h6" color="primary" align="center" mt={4}>
+            Loading...
+          </Typography>
         )}
-    </Box>
-            </Grid>
-
-           {type === "update" && (
-              <Grid item xs={2} sm={2}>
-                <div className="form-group">  
-                  <input
-                    type="file"
-                    id="file"
-                    placeholder="Agregar imagen"
-                    className="form-control"
-                    onChange={fileHandler}
-                  />
-                </div>
-              </Grid>
-            )}
-
-            {type !== "view" && (
-              <Button type="submit" variant="contained" fullWidth>
-                {nameButton}
-              </Button>
-            )}
-          </Grid>
-
-          <Snackbar
-            open={isAlertOpen}
-            autoHideDuration={6000}
-            onClose={() => setIsAlertOpen(false)}
-          >
-            <Alert onClose={handleAlertClose} severity="error">
-              {alertMessage}
-            </Alert>
-          </Snackbar>
-        </>
-      ) : (
-        <p>Loading...</p>
-      )}
-    </Box>
+      </Box>
+    </>
   );
 }

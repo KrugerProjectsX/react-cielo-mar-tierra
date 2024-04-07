@@ -15,22 +15,32 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
+import Logo from '../images/Logo.png'
+import Background from '../images/Background.avif'
+
 
 // Define los colores
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#27374D", // PRIMARY_COLOR
+      main: "#000000", // PRIMARY_COLOR
     },
     text: {
-      primary: "#333333", // FONT_COLOR
-      secondary: "#777777", // LIGHT_FONT_COLOR
+      primary: "#FFFFFF", // FONT_COLOR
+      secondary: "#FFFFFF", // LIGHT_FONT_COLOR
     },
     background: {
-      default: "#F5F5F5", // BACKGROUND_COLOR
+      default: "#ffffff29", // BACKGROUND_COLOR
     },
   },
 });
+const divStyle ={
+  backgroundImage: `url(${Background})`,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  width: '100vw', // Ancho del componente al ancho total de la ventana
+  height: '100vh', // Altura del componente al alto total de la ventana
+};
 
 const Login = ({ isOpen = true, handleClose = false }) => {
   const [email, setEmail] = useState("");
@@ -127,7 +137,9 @@ const Login = ({ isOpen = true, handleClose = false }) => {
   };
 
   return (
+    <div style={divStyle}> 
     <ThemeProvider theme={theme}>
+      
       <Modal
         open={isOpen}
         onClose={handleClose}
@@ -137,10 +149,11 @@ const Login = ({ isOpen = true, handleClose = false }) => {
           justifyContent: "center",
         }}
       >
+        
         <Box
           sx={{
             width: 400, // Ancho fijo
-            height: 300, // Alto fijo
+            height: 500, // Alto fijo
             backgroundColor: "background.default",
             border: "2px solid #000",
             padding: "24px",
@@ -148,6 +161,16 @@ const Login = ({ isOpen = true, handleClose = false }) => {
             flexDirection: "column",
           }}
         >
+          <div style={{display: 'flex', justifyContent:'center'}}> 
+          <img
+  className="rounded-full "
+  src={Logo}
+  alt="Logo"
+  style={{ width: '128px', height: 'auto' }}
+/>
+
+
+          </div>
           <Tabs
             value={activeTab}
             onChange={(e, newValue) => setActiveTab(newValue)}
@@ -175,7 +198,7 @@ const Login = ({ isOpen = true, handleClose = false }) => {
                 ></Typography>
                 <TextField
                   label="Email"
-                  variant="outlined"
+                  variant='outlined'
                   fullWidth
                   value={email}
                   onChange={handleEmailChange}
@@ -197,6 +220,7 @@ const Login = ({ isOpen = true, handleClose = false }) => {
                   onClick={handleLoginClick}
                   fullWidth
                   sx={{ marginTop: 8 }}
+                  
                 >
                   Login
                 </Button>{" "}
@@ -230,6 +254,7 @@ const Login = ({ isOpen = true, handleClose = false }) => {
         </Alert>
       </Snackbar>
     </ThemeProvider>
+    </div>
   );
 };
 

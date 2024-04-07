@@ -4,6 +4,30 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app, db } from "../firebase";
 import { Box, Switch } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardMedia, Typography, Button,Grid,TextField } from "@mui/material";
+
+
+
+
+const styles = {
+  root: {
+    display: "flex",
+    maxWidth: 600,
+    margin: "auto",
+    marginTop: 16,
+  },
+  media: {
+    width: 200,
+    objectFit: "cover",
+  },
+  content: {
+    flex: "1 0 auto",
+  },
+  button: {
+    marginTop: 16,
+  },
+};
+
 
 
 function FlatForm({ type, id }) { console.log(type); console.log(id)
@@ -47,6 +71,14 @@ function FlatForm({ type, id }) { console.log(type); console.log(id)
  const handleSubmit = async (e) => {
     e.preventDefault();
     const hasAC = hasACRef.current.checked ? "Yes" : "No";
+    console.log(hasACRef)
+    console.log(areaSizeRef.current.value)
+    console.log(cityRef.current.value)
+    console.log(dateAvailableRef.current.value)
+    console.log(streetNameRef.current.value)
+    console.log(yearBuiltRef.current.value)
+    console.log(streetNumberRef.current.value)
+
     if (
       areaSizeRef.current.value.trim() === "" ||
       cityRef.current.value.trim() === "" ||
@@ -91,7 +123,7 @@ function FlatForm({ type, id }) { console.log(type); console.log(id)
       areaSizeRef.current.value = "";
       cityRef.current.value = "";
       dateAvailableRef.current.value = "";
-      hasACRef.current.value = "";
+      hasACRef.current.checked = "";
       rentPriceRef.current.value = "";
       streetNameRef.current.value = "";
       streetNumberRef.current.value = "";
@@ -112,6 +144,7 @@ function FlatForm({ type, id }) { console.log(type); console.log(id)
   const getFlatData = async () => {
     const dataFlat = await getDoc(refFlat);
     const responseFlat = { ...dataFlat.data() };
+    console.log(responseFlat)
     setFlat(responseFlat);
     setFlatLoaded(true);
   }
@@ -138,91 +171,162 @@ function FlatForm({ type, id }) { console.log(type); console.log(id)
   }
 
   return (
-    
-      <form class="max-w-md mx-auto my-4" onSubmit={handleSubmit}>
-        {flatLoaded ? (
-        <> 
-
+    <Box maxWidth="700px" margin="auto" bgcolor="rgba(255, 255, 255, 0.5)" p={4} sx ={{borderRadius: 3}} >
+    <form className="max-w-md mx-auto my-4" onSubmit={handleSubmit}>
+      {flatLoaded ? (
+        <>
           {type !== "create" && type !== "update" && (
-            <div class="max-w-md w-full lg:max-w-full lg:flex">
-              <div class="h-48 lg:h-auto lg:w-48 flex-none bg-cover rounded-t lg:rounded-t-none lg:rounded-l text-center overflow-hidden" style={{ backgroundImage: `url(${flat.imgFlat})` }} title="Woman holding a mug"></div>
-              <div class="border border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
-                <p class="text-sm text-gray-600 flex items-center">
-                  <svg class="fill-current text-gray-500 w-3 h-3 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M4 8V6a6 6 0 1 1 12 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8c0-1.1.9-2 2-2h1zm5 6.73V17h2v-2.27a2 2 0 1 0-2 0zM7 6v2h6V6a3 3 0 0 0-6 0z" />
-                  </svg>
-                  Flat
-                </p>
-                <div class="text-gray-900 font-bold text-xl mb-2">Details</div>
-                <p class="text-gray-700 text-base">
-                  <strong>City:</strong> 
-                  {flat.city} <br /> 
-                  <strong>Street name:</strong> {flat.streetName} <br /> 
-                  <strong>Street number:</strong> {flat.streetNumber} <br />
-                  <strong>Area size:</strong> {flat.areaSize} <br />
-                  <strong>Date available:</strong> {flat.dateAvailable} <br />
-                  <strong>Has AC:</strong> {flat.hasAC}
-                  </p>
-                <div class="flex items-center">
-                  <img class="w-10 h-10 rounded-full mr-4" src={flat.imgFlat} alt="Avatar of Jonathan Reinink"></img>
-                  <div class="text-sm">
-                    <p class="text-gray-900 leading-none"><strong>Price:</strong>{flat.rentPrice}</p>
-                    <p class="text-gray-600"><strong>Year Built:</strong>{flat.yearBuilt}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Card style={styles.root}>
+              <CardMedia
+                component="img"
+                style={styles.media}
+                image={flat.imgFlat}
+                title="Flat image"
+              />
+              <CardContent style={styles.content}>
+                <Typography variant="h5" component="h2" gutterBottom>
+                  Flat Details
+                </Typography>
+                <Typography variant="body1" color="textSecondary">
+                  <strong>Price:</strong> ${flat.rentPrice}
+                </Typography>
+                <Typography variant="body1" color="textSecondary" gutterBottom>
+                  <strong>Year Built:</strong> {flat.yearBuilt}
+                </Typography>
+                <Typography variant="body1" color="textSecondary" gutterBottom>
+                  <strong>City:</strong> {flat.city}
+                </Typography>
+                <Typography variant="body1" color="textSecondary" gutterBottom>
+                  <strong>Street:</strong> {flat.streetName}, No. {flat.streetNumber}
+                </Typography>
+                <Typography variant="body1" color="textSecondary" gutterBottom>
+                  <strong>Area Size:</strong> {flat.areaSize} sqft
+                </Typography>
+                <Typography variant="body1" color="textSecondary" gutterBottom>
+                  <strong>Date Available:</strong> {flat.dateAvailable}
+                </Typography>
+                <Typography variant="body1" color="textSecondary" gutterBottom>
+                  <strong>AC:</strong> {flat.hasAC ? 'Yes' : 'No'}
+                </Typography>
+              
+              </CardContent>
+            </Card>
           )}
           {(type === 'create' || type === 'update') && ( 
-            <div class="grid gap-6 mb-6 md:grid-cols-2">
-              <div> 
-                <label for="city" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">City</label>
-                <input disabled={type === 'view'} type="text" id="city" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" inputRef={cityRef} value={flat.city} variant="outlined" placeholder="City" required />
-              </div>
-              <div>
-                <label for="streetName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Street name</label>
-                <input disabled={type === 'view'} type="text" id="streetName" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" ref={streetNameRef} defaultValue={flat.streetName} variant="outlined" placeholder="Street name" required />
-              </div>
-              <div>
-                <label for="streetNumber" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Street number</label>
-                <input disabled={type === 'view'} type="number" id="streetNumber" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" ref={streetNumberRef} defaultValue={flat.streetNumber} variant="outlined" placeholder="Street number" required />
-              </div>
-              <div>
-                <label for="areaSize" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Area Size</label>
-                <input disabled={type === 'view'} type="number" id="areaSize" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" ref={areaSizeRef} defaultValue={flat.areaSize} placeholder="Area Size" required />
-              </div>
-              <div>
-                <Box className="flex items-center mb-4">
-                  <label>Has AC</label>
-                  <Switch disabled={type === 'view'} defaultValue={flat.hasAc} id="hasAC" ref={hasACRef} color="primary" />
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  disabled={type === 'view'}
+                  fullWidth
+                  id="city"
+                  label="City"
+                  variant="outlined"
+                  inputRef={cityRef}
+                  defaultValue={flat.city}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  disabled={type === 'view'}
+                  fullWidth
+                  id="streetName"
+                  label="Street Name"
+                  variant="outlined"
+                  inputRef={streetNameRef}
+                  defaultValue={flat.streetName}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  disabled={type === 'view'}
+                  fullWidth
+                  id="streetNumber"
+                  label="Street Number"
+                  variant="outlined"
+                  type="number"
+                  inputRef={streetNumberRef}
+                  defaultValue={flat.streetNumber}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  disabled={type === 'view'}
+                  fullWidth
+                  id="areaSize"
+                  label="Area Size"
+                  variant="outlined"
+                  type="number"
+                  inputRef={areaSizeRef}
+                  defaultValue={flat.areaSize}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Box display="flex" alignItems="center" marginBottom="16px">
+                  <label htmlFor="hasAC" style={{ marginRight: "8px" }}>Has AC</label>
+                  <Switch disabled={type === 'view'} defaultChecked={flat.hasAC} id="hasAC" inputRef={hasACRef} color="primary" />
                 </Box>
-              </div>
-              <div>
-                <label for="yearBuilt" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Year built</label>
-                <input disabled={type === 'view'} type="number" id="yearBuilt" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" ref={yearBuiltRef} inputProps={{ min: 1900, max: 2050 }} defaultValue={flat.yearBuilt} placeholder="Year Built" required />
-              </div>
-              <div>
-                <label for="rentPrice" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Rent Price</label>
-                <input disabled={type === 'view'} type="number" id="rentPrice" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" ref={rentPriceRef} placeholder="Rent Price" defaultValue={flat.rentPrice} required />
-              </div>
-              <div>
-                <label for="dateAvailable" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date Available</label>
-                <input disabled={type === 'view'} type="date" id="dateAvailable" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" ref={dateAvailableRef} defaultValue={flat.dateAvailable} required />
-              </div>
-              <div>
-                <label for="file" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Photo</label>
-                <input disabled={type === 'view'} type="file" id="file"  placeholder="Add photo" className="form-control" onChange={fileHandler} />
-              </div>
-              <div>
-            </div>
-            <div className="flex justify-center mt-4"  >
-                {type !== 'view' && <button type='submit' className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">{nameButton}</button>}
-            </div>
-          </div>)}
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  disabled={type === 'view'}
+                  fullWidth
+                  id="yearBuilt"
+                  label="Year Built"
+                  variant="outlined"
+                  type="number"
+                  inputRef={yearBuiltRef}
+                  defaultValue={flat.yearBuilt}
+                  inputProps={{ min: 1900, max: 2050 }}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  disabled={type === 'view'}
+                  fullWidth
+                  id="rentPrice"
+                  label="Rent Price"
+                  variant="outlined"
+                  type="number"
+                  inputRef={rentPriceRef}
+                  defaultValue={flat.rentPrice}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  disabled={type === 'view'}
+                  fullWidth
+                  id="dateAvailable"
+                  label="Date Available"
+                  variant="outlined"
+                  type="date"
+                  inputRef={dateAvailableRef}
+                  defaultValue={flat.dateAvailable}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <input disabled={type === 'view'} type="file" id="file" placeholder="Add photo" className="form-control" onChange={fileHandler} />
+              </Grid>
+              <Grid item xs={12}>
+                <div className="justify-center flex"> 
+                    <Button type='submit' variant="contained" sx={{ backgroundColor: 'black' }}>{nameButton}</Button>
+                </div>
+           
+              </Grid>
+            </Grid>
+          )}
         </>
-      ):(<p>Loading...</p>)
-    }
- </form>
+      ) : (
+        <p>Loading...</p>
+      )}
+    </form>
+  </Box>
     
   );
 }
