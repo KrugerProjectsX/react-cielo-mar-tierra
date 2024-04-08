@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
@@ -17,9 +17,19 @@ import Header from "./components/Header";
 import Footer from './components/Footer';
 
 function App() {
+  const location = useLocation();
+
+  // Function to determine if the header should be shown based on the current route
+  const shouldShowHeader = () => {
+    // Add the routes where you want to hide the header
+    const routesWithoutHeader = ["/"];
+    return !routesWithoutHeader.includes(location.pathname);
+  };
+
   return (
     <>
-      <Header />
+      {/* Conditionally render the header */}
+      {shouldShowHeader() && <Header />}
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path={"/dashboard"} element={<Home />} />
