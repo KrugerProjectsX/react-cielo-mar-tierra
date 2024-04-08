@@ -1,33 +1,43 @@
-import {useParams} from "react-router-dom";
+import React from "react";
+import { useParams } from "react-router-dom";
 import Header from "../components/Header";
 import FlatForm from "../components/FlatForm";
-import Typography from '@mui/material/Typography'
+import Typography from "@mui/material/Typography";
 import Messages from "../components/Messages";
-import backgroundpages from '../images/backgroundpages.avif'
 
 const bgStyle = {
-    backgroundImage: `url(${backgroundpages})`,
-    backgroundSize: 'cover', // Ajusta el tamaño de la imagen para cubrir todo el contenedor
-    backgroundPosition: 'center',
-    position: 'sticky',
-    width: '100%',
-    height: '100%',
-    
-  };
+  backgroundColor: "#f0f3f4",
+  width: "100%",
+  height: "100%",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: "20px 0",
+};
 
-export default function Flat() {
-    let { id }  = useParams();
-    console.log(id)
-    return (
-        <div style={bgStyle}> 
-            <Header/>
-            <div className="justify-center flex mt-10 ">
-                <Typography  variant="h3" component="h1" gutterBottom  style={{  fontSize: "2.5rem", fontWeight: "bold", marginBottom: "20px" }}>
-  View Flat
-</Typography></div>
-            
-            <FlatForm type={'view'} id={id}/>
-            <Messages flatId={id}/>
-        </div>
-    );
-}
+const headingStyle = {
+  fontSize: "2.5rem",
+  fontWeight: "bold",
+  marginBottom: "20px",
+  color: "#333",
+};
+
+const Flat = () => {
+  const { id } = useParams();
+
+  return (
+    <div style={bgStyle}>
+      <Header />
+      <Typography variant="h3" component="h1" gutterBottom style={headingStyle}>
+        View Flat
+      </Typography>
+      <div style={{ maxWidth: "600px", width: "100%", padding: "0 20px" }}>
+        <FlatForm type="view" id={id} />
+        <Messages flatId={id} />
+      </div>
+    </div>
+  );
+};
+
+export default Flat;

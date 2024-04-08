@@ -8,80 +8,73 @@ import {
   Slider,
   TextField,
   Typography,
-  Card, CardMedia, CardContent, CardActions,Grid} from "@mui/material";
+  Card,
+  CardMedia,
+  CardContent,
+  CardActions,
+  Grid
+} from "@mui/material";
 
 export default function UsersTable() {
   const ref = collection(db, "user");
   const refFlats = collection(db, "flat");
   const [userType, setUserType] = useState("");
   const [flatsCounter, setFlatsCounter] = useState("");
-  const [valueSlider, setValueSlider] = React.useState([18, 120]);
+  const [valueSlider, setValueSlider] = useState([18, 120]);
   const [users, setUsers] = useState([]);
-  
-  const getData = async () => {
-    let arrayWhere = [];
-    if (userType) {
-      arrayWhere.push(where("role", "==", userType));
-    }
 
-    const today = new Date();
+  const today = new Date();
+
+  const getData = async () => {
+    const arrayWhere = [];
+
+    if (userType) arrayWhere.push(where("role", "==", userType));
+
     const minBirthDate = new Date(
       today.getFullYear() - valueSlider[0],
       today.getMonth(),
       today.getDate()
-    )
-      .toISOString()
-      .split("T")[0];
+    ).toISOString();
+
     const maxBirthDate = new Date(
       today.getFullYear() - valueSlider[1],
       today.getMonth(),
       today.getDate()
-    )
-      .toISOString()
-      .split("T")[0];
+    ).toISOString();
 
-    if (valueSlider && valueSlider.length > 1) {
-      arrayWhere.push(where("birthDate", ">=", maxBirthDate));
-      arrayWhere.push(where("birthDate", "<=", minBirthDate));
-    }
+    arrayWhere.push(where("birthDate", ">=", maxBirthDate));
+    arrayWhere.push(where("birthDate", "<=", minBirthDate));
 
     const searchUser = query(ref, ...arrayWhere);
-
     const data = await getDocs(searchUser);
-    const usersSet = []; // Conjunto para almacenar usuarios únicos
+    const usersSet = [];
 
-    // Iterar sobre los usuarios y agregarlos al conjunto
     if (data && data.docs) {
-    for (const item of data.docs) {
-      const search = query(refFlats, where("user", "==", item.id));
-      const dataFlats = await getDocs(search);
+      for (const item of data.docs) {
+        const search = query(refFlats, where("user", "==", item.id));
+        const dataFlats = await getDocs(search);
 
-      if (flatsCounter) {
-        const flatsValue = flatsCounter.split("-");
-        if (flatsValue.length > 1) {
-          const min = flatsValue[0];
-          const max = flatsValue[1];
-          if (dataFlats.docs?.length < min || dataFlats.docs?.length > max) {
+        if (flatsCounter) {
+          const [min, max] = flatsCounter.split("-").map(Number);
+          if (
+            (max && dataFlats.docs.length < min) ||
+            (max && dataFlats.docs.length > max) ||
+            (!max && dataFlats.docs.length < 61)
+          ) {
             continue;
           }
-        } else {
-          if (flatsValue[0] === "61+") {
-            if (dataFlats.docs?.length < 61) {
-              continue;
-            }
-          }
         }
+
+        const userWithFlats = {
+          ...item.data(),
+          id: item.id,
+          flats: dataFlats.docs.length
+        };
+        usersSet.push(userWithFlats);
       }
-      const userWithFlats = {
-        ...item.data(),
-        id: item.id,
-        flats: dataFlats.docs?.length,
-      };
-      usersSet.push(userWithFlats);
+    } else {
+      console.error("No se pudieron obtener los documentos de la consulta.");
     }
-  } else {
-    console.error("No se pudieron obtener los documentos de la consulta.");
-  }
 
     setUsers(usersSet);
   };
@@ -90,10 +83,8 @@ export default function UsersTable() {
     getData();
   }, [userType, flatsCounter, valueSlider]);
 
-
-
   return (
-    <> <br></br>
+    <>
       <Box component="form" className="flex space-x-4 mx-auto max-w-screen-md mb-4">
         <div className="flex items-center space-x-4">
           <TextField
@@ -157,48 +148,59 @@ export default function UsersTable() {
           />
         </div>
       </Box>
-      
+
       <div style={{ margin: "2%" }}>
-          <Grid container spacing={2}>  
-            {users.map((row) => (  
-            <Grid item key={row.id} xs={12} sm={6} md={3}>  
-                <Card sx={{ maxWidth: 200 }}>
-                  <CardMedia
-                      component="img"
-                      height="100"
-                      image={row.imgPerson}
-                      alt="Person"
-                      style={{ borderRadius: "5px", 
-                      maxHeight: 50, // Limitar la altura máxima de la imagen
-                      maxWidth: '25%', // Ajustar el ancho máximo de la imagen
-                      objectFit: 'cover' }}
-                  />
-                  <div class="relative">
-                    <div class="hover:bg-blue-200 transition duration-300 absolute bottom-0 top-0 right-0 left-0 bg-gray-900 opacity-25">
+        <Grid container spacing={2}>
+          {users.map((row) => (
+            <Grid item key={row.id} xs={12} sm={6} md={3}>
+              <Card sx={{ maxWidth: 200 }}>
+                <CardMedia
+                  component="img"
+                  height="100"
+                  image={row.imgPerson}
+                  alt="Person"
+                  style={{
+                    borderRadius: "5px",
+                    maxHeight: 50,
+                    maxWidth: "25%",
+                    objectFit: "cover"
+                  }}
+                />
+                <div className="relative">
+                  <div className="hover:bg-blue-200 transition duration-300 absolute bottom-0 top-0 right-0 left-0 bg-gray-900 opacity-25">
                   </div>
-                  <CardContent sx={{ paddingBottom: '2px !important' }}>
+                  <CardContent sx={{ paddingBottom: "2px !important" }}>
                     <Typography variant="body2" color="text.secondary">
-                     <p><strong>First Name: </strong>{row.firstName}<br />
-                     <strong>Last Name: </strong>{row.lastName}<br />
-                     <strong>Email: </strong>{row.email}<br />
-                     <strong>Birth date: </strong>{row.birthDate}<br />
-                     <strong>Flats Count:</strong> {row.flats}<br />
-                     <strong>Is admin: </strong>{row.role === "admin" ? "Yes" : "No"}
-                     </p> 
-                     <p></p>
+                      <p>
+                        <strong>First Name: </strong>
+                        {row.firstName}
+                        <br />
+                        <strong>Last Name: </strong>
+                        {row.lastName}
+                        <br />
+                        <strong>Email: </strong>
+                        {row.email}
+                        <br />
+                        <strong>Birth date: </strong>
+                        {row.birthDate}
+                        <br />
+                        <strong>Flats Count:</strong> {row.flats}
+                        <br />
+                        <strong>Is admin: </strong>
+                        {row.role === "admin" ? "Yes" : "No"}
+                      </p>
+                      <p></p>
                     </Typography>
-                   </CardContent>                  
-                    <CardActions sx={{ paddingTop: '1px !important' }} variant="body2">
-                      <Button href={`/profile/edit/${row.id}`} >Edit</Button>
-                    </CardActions>
-                    </div>
-
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                  </CardContent>
+                  <CardActions sx={{ paddingTop: "1px !important" }} variant="body2">
+                    <Button href={`/profile/edit/${row.id}`}>Edit</Button>
+                  </CardActions>
+                </div>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       </div>
-
     </>
   );
 }

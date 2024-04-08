@@ -1,18 +1,14 @@
-import { Box, Button, TextField, Grid, Snackbar, Alert, Card, CardMedia, Typography } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { doc, updateDoc, getDoc, collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { app } from "../firebase";
+import { Box, Button, TextField, Grid, Snackbar, Alert, Card, CardMedia, Typography } from "@mui/material";
 
 export default function UserForm({ type, userId }) {
-  let urlImDesc;
-  let pathImg;
-  const currentDate = new Date().toJSON().slice(0, 10);
   const [user, setUser] = useState({
     firstName: "",
     lastName: "",
-    birthDate: currentDate,
+    birthDate: new Date().toJSON().slice(0, 10),
     role: "",
   });
   const [email, setEmail] = useState("");
@@ -28,10 +24,11 @@ export default function UserForm({ type, userId }) {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [password, setPassword] = useState("");
   const userCollection = collection(db, "user");
-  const storage = getStorage(app);
+  const storage = getStorage();
 
   let rf = null;
-  if (userId == null && type !== 'create') {
+  let pathImg; // Declare pathImg variable here
+  if (!userId && type !== 'create') {
     userId = JSON.parse(localStorage.getItem('user_logged'));
   }
   if (userId && type !== 'create') {
@@ -75,56 +72,49 @@ export default function UserForm({ type, userId }) {
       emailRef.current.value.trim() === "" ||
       birthDateRef.current.value.trim() === ""
     ) {
-      setAlertMessage("Por favor, complete todos los campos");
+      setAlertMessage("Please fill out all fields");
       setIsAlertOpen(true);
       return;
     }
 
-    if (pathImg === undefined || pathImg === "") {
-      urlImDesc =
-        "https://firebasestorage.googleapis.com/v0/b/flat-project-1ac7a.appspot.com/o/documentos%2Fperson.png?alt=media&token=6db5d670-b6de-479e-b9ea-a60ed3ce2497";
+    let urlImgDesc;
+    if (!pathImg || pathImg === "") {
+      urlImgDesc = "https://firebasestorage.googleapis.com/v0/b/flat-project-1ac7a.appspot.com/o/documentos%2Fperson.png?alt=media&token=6db5d670-b6de-479e-b9ea-a60ed3ce2497";
     } else {
-      urlImDesc = pathImg;
+      urlImgDesc = pathImg;
     }
 
-    let userSend = {
+    const userToSend = {
       firstName: firstNameRef.current.value,
       lastName: lastNameRef.current.value,
       email: emailRef.current.value,
       birthDate: birthDateRef.current.value,
       role: userTypeRef.current.value,
-      imgPerson: urlImDesc,
+      imgPerson: urlImgDesc,
     };
 
     if (type === "create") {
-      userSend = { ...userSend, password: passwordRef.current.value };
-      await addDoc(userCollection, userSend);
-      setAlertMessage("Usuario creado");
+      userToSend.password = passwordRef.current.value;
+      await addDoc(userCollection, userToSend);
+      setAlertMessage("User created");
       setIsAlertOpen(true);
-      firstNameRef.current.value = "";
-      lastNameRef.current.value = "";
-      emailRef.current.value = "";
-      birthDateRef.current.value = "";
-      setRole("");
-      if (passwordRef.current) {
-        passwordRef.current.value = "";
-      }
+      resetFields();
     }
 
     if (type === "update") {
-      setUser(userSend);
-      await updateDoc(rf, userSend);
-      setAlertMessage("User update");
+      setUser(userToSend);
+      await updateDoc(rf, userToSend);
+      setAlertMessage("User updated");
       setIsAlertOpen(true);
     }
   };
 
   const handleEmailChange = (e) => {
     const emailValue = e.target.value;
-    setEmail(e.target.value);
+    setEmail(emailValue);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(emailValue)) {
-      setAlertMessage("Formato de correo electrónico inválido");
+      setAlertMessage("Invalid email format");
       setIsAlertOpen(true);
     }
   };
@@ -140,16 +130,14 @@ export default function UserForm({ type, userId }) {
     const passwordValue = e.target.value;
     setPassword(passwordValue);
     if (passwordValue.length < 6) {
-      setAlertMessage("La contraseña debe tener al menos 6 caracteres");
+      setAlertMessage("Password must be at least 6 characters long");
       setIsAlertOpen(true);
       return;
     }
 
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9\s]).{6,}$/;
     if (!passwordRegex.test(passwordValue)) {
-      setAlertMessage(
-        "La contraseña debe contener al menos una letra, un número y un carácter especial"
-      );
+      setAlertMessage("Password must contain at least one letter, one number, and one special character");
       setIsAlertOpen(true);
     }
   };
@@ -161,20 +149,30 @@ export default function UserForm({ type, userId }) {
     pathImg = await getDownloadURL(refArchivo);
   };
 
+  const resetFields = () => {
+    firstNameRef.current.value = "";
+    lastNameRef.current.value = "";
+    emailRef.current.value = "";
+    birthDateRef.current.value = "";
+    setRole("");
+    if (passwordRef.current) {
+      passwordRef.current.value = "";
+    }
+  };
+
   return (
     <>
       <Box
-      bgcolor={'rgba(255, 255, 255, 0.5)'}
-      component="form"
-      onSubmit={handleSubmit}
-      className="max-w-md mx-auto p-4 border rounded"
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
+        bgcolor={'rgba(255, 255, 255, 0.5)'}
+        component="form"
+        onSubmit={handleSubmit}
+        className="max-w-md mx-auto p-4 border rounded"
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
-
         {userLoaded ? (
           <>
             {type !== "create" && (
@@ -280,8 +278,8 @@ export default function UserForm({ type, userId }) {
                       className="w-full mb-5"
                       inputRef={userTypeRef}
                     >
-                      <option key="landlord" value="landlord">landlord</option>
-                      <option key="renter" value="renter">renter</option>
+                      <option key="landlord" value="landlord">Landlord</option>
+                      <option key="renter" value="renter">Renter</option>
                     </TextField>
                   ) : (
                     <TextField
@@ -301,7 +299,7 @@ export default function UserForm({ type, userId }) {
                     <input
                       type="file"
                       id="file"
-                      placeholder="Agregar imagen"
+                      placeholder="Add image"
                       className="form-control"
                       onChange={fileHandler}
                     />

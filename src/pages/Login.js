@@ -15,32 +15,16 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
-import Logo from '../images/Logo.png'
-import Background from '../images/Background.avif'
+import Logo from '../images/Logo.png';
+import Background from '../images/Background.jpg';
 
-
-// Define los colores
 const theme = createTheme({
   palette: {
-    primary: {
-      main: "#000000", // PRIMARY_COLOR
-    },
-    text: {
-      primary: "#FFFFFF", // FONT_COLOR
-      secondary: "#FFFFFF", // LIGHT_FONT_COLOR
-    },
-    background: {
-      default: "#ffffff29", // BACKGROUND_COLOR
-    },
+    primary: { main: "#FFFFFF" },
+    text: { primary: "#FFFFFF", secondary: "#FFFFFF" },
+    background: { default: "#1E1E1E" }, // Dark background color
   },
 });
-const divStyle ={
-  backgroundImage: `url(${Background})`,
-  backgroundSize: 'cover',
-  backgroundPosition: 'center',
-  width: '100vw', // Ancho del componente al ancho total de la ventana
-  height: '100vh', // Altura del componente al alto total de la ventana
-};
 
 const Login = ({ isOpen = true, handleClose = false }) => {
   const [email, setEmail] = useState("");
@@ -55,10 +39,10 @@ const Login = ({ isOpen = true, handleClose = false }) => {
 
   const handleEmailChange = (e) => {
     const emailValue = e.target.value;
-    setEmail(e.target.value);
+    setEmail(emailValue);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(emailValue)) {
-      setAlertMessage("Formato de correo electrónico inválido");
+      setAlertMessage("Invalid email format");
       setIsAlertOpen(true);
     }
   };
@@ -67,7 +51,7 @@ const Login = ({ isOpen = true, handleClose = false }) => {
     const passwordValue = e.target.value;
     setPassword(passwordValue);
     if (passwordValue.length < 6) {
-      setAlertMessage("La contraseña debe tener al menos 6 caracteres");
+      setAlertMessage("Password must be at least 6 characters long");
       setIsAlertOpen(true);
       return;
     }
@@ -75,7 +59,7 @@ const Login = ({ isOpen = true, handleClose = false }) => {
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9\s]).{6,}$/;
     if (!passwordRegex.test(passwordValue)) {
       setAlertMessage(
-        "La contraseña debe contener al menos una letra, un número y un carácter especial"
+        "Password must contain at least one letter, one number, and one special character"
       );
       setIsAlertOpen(true);
     }
@@ -86,7 +70,7 @@ const Login = ({ isOpen = true, handleClose = false }) => {
     const passwordValue = passwordRef.current.value;
 
     if (!email || !password) {
-      setAlertMessage("Por favor, complete todos los campos");
+      setAlertMessage("Please fill in all fields");
       setIsAlertOpen(true);
       return;
     }
@@ -103,29 +87,23 @@ const Login = ({ isOpen = true, handleClose = false }) => {
           console.log("Login success");
           localStorage.setItem("user_logged", JSON.stringify(userId));
           navigate("/dashboard", { replace: true });
-          handleClose(); // Cierra el modal cuando el inicio de sesión es exitoso
+          handleClose(); // Close modal on successful login
         } else {
-          console.log("Contraseña incorrecta");
-          setAlertMessage("Usuario o contraseña incorrectos");
+          console.log("Incorrect password");
+          setAlertMessage("Incorrect email or password");
           setIsAlertOpen(true);
         }
       } else {
-        console.log("Usuario no encontrado");
-        setAlertMessage("Usuario o contraseña incorrectos");
+        console.log("User not found");
+        setAlertMessage("Incorrect email or password");
         setIsAlertOpen(true);
       }
     } catch (error) {
-      console.error("Error al iniciar sesión:", error);
+      console.error("Error logging in:", error);
       setAlertMessage(
-        "Ocurrió un error al iniciar sesión. Por favor, inténtelo de nuevo más tarde."
+        "An error occurred while logging in. Please try again later."
       );
       setIsAlertOpen(true);
-    }
-  };
-
-  const cambiarTab = (numeroTab) => {
-    if (activeTab !== numeroTab) {
-      setActiveTab(numeroTab);
     }
   };
 
@@ -137,123 +115,76 @@ const Login = ({ isOpen = true, handleClose = false }) => {
   };
 
   return (
-    <div style={divStyle}> 
-    <ThemeProvider theme={theme}>
-      
-      <Modal
-        open={isOpen}
-        onClose={handleClose}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        
-        <Box
-          sx={{
-            width: 400, // Ancho fijo
-            height: 500, // Alto fijo
-            backgroundColor: "background.default",
-            border: "2px solid #000",
-            padding: "24px",
-            display: "flex",
-            flexDirection: "column",
-          }}
+    <div style={{ 
+      backgroundImage: `url(${Background})`, 
+      backgroundSize: 'cover', 
+      backgroundPosition: 'center', 
+      backgroundAttachment: 'fixed', 
+      width: '100vw', 
+      height: '100vh',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}>
+      <ThemeProvider theme={theme}>
+        <Modal
+          open={isOpen}
+          onClose={handleClose}
+          style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
         >
-          <div style={{display: 'flex', justifyContent:'center'}}> 
-          <img
-  className="rounded-full "
-  src={Logo}
-  alt="Logo"
-  style={{ width: '128px', height: 'auto' }}
-/>
-
-
-          </div>
-          <Tabs
-            value={activeTab}
-            onChange={(e, newValue) => setActiveTab(newValue)}
+          <Box
+            sx={{
+              width: 400,
+              height: 500,
+              backgroundColor: "#2B2B2B", // Darker background color
+              border: "2px solid #000",
+              borderRadius: '10px',
+              padding: "24px",
+              display: "flex",
+              flexDirection: "column",
+              boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.1)',
+            }}
           >
-            <Tab label="Login" value="1" />
-            <Tab label="Register" value="2" />
-          </Tabs>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+              <img className="rounded-full" src={Logo} alt="Logo" style={{ width: '160px', height: 'auto' }} /> {/* Increased logo size */}
+            </div>
+            <Tabs
+              value={activeTab}
+              onChange={(e, newValue) => setActiveTab(newValue)}
+              sx={{ marginBottom: '24px' }}
+            >
+              <Tab label="Login" value="1" />
+              <Tab label="Register" value="2" />
+            </Tabs>
 
-          <Box style={{ flex: 1 }}>
-            {" "}
-            {/* Distribuye uniformemente */}
-            {activeTab === "1" && (
-              <Box
-                className="container"
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  marginBottom: 2,
-                }}
-              >
-                <Typography
-                  variant="h6"
-                  component="div"
-                  sx={{ marginBottom: 2 }}
-                ></Typography>
-                <TextField
-                  label="Email"
-                  variant='outlined'
-                  fullWidth
-                  value={email}
-                  onChange={handleEmailChange}
-                  inputRef={emailRef}
-                  sx={{ marginBottom: 2 }}
-                />
-                <TextField
-                  label="Password"
-                  type="password"
-                  variant="outlined"
-                  fullWidth
-                  value={password}
-                  onChange={handlePasswordChange}
-                  inputRef={passwordRef}
-                  sx={{ marginBottom: 2 }}
-                />
-                <Button
-                  variant="contained"
-                  onClick={handleLoginClick}
-                  fullWidth
-                  sx={{ marginTop: 8 }}
-                  
+            <Box style={{ flex: 1 }}>
+              {activeTab === "1" && (
+                <Box
+                  className="container"
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    marginBottom: 2,
+                  }}
                 >
-                  Login
-                </Button>{" "}
-                {/* Agregar margen superior al botón */}
-              </Box>
-            )}
-            {activeTab === "2" && (
-              <Box
-                className="container"
-                sx={{ display: "flex", flexDirection: "column" }}
-              >
-                <Typography
-                  variant="h6"
-                  component="div"
-                  sx={{ marginBottom: 2 }}
-                ></Typography>
-                <UserForm type={"create"} />
-              </Box>
-            )}
+                  <TextField label="Email" variant='outlined' fullWidth value={email} onChange={handleEmailChange} inputRef={emailRef} sx={{ marginBottom: 2 }} />
+                  <TextField label="Password" type="password" variant="outlined" fullWidth value={password} onChange={handlePasswordChange} inputRef={passwordRef} sx={{ marginBottom: 2 }} />
+                  <Button variant="contained" onClick={handleLoginClick} fullWidth sx={{ marginTop: 4, borderRadius: '20px', backgroundColor: '#000', color: '#FFF' }}>Login</Button> {/* Material-UI Button */}
+                </Box>
+              )}
+              {activeTab === "2" && (
+                <Box className="container" sx={{ display: "flex", flexDirection: "column" }}>
+                  <Typography variant="h6" component="div" sx={{ marginBottom: 2 }}></Typography>
+                  <UserForm type={"create"} />
+                </Box>
+              )}
+            </Box>
           </Box>
-        </Box>
-      </Modal>
-
-      <Snackbar
-        open={isAlertOpen}
-        autoHideDuration={6000}
-        onClose={handleAlertClose}
-      >
-        <Alert onClose={handleAlertClose} severity="error">
-          {alertMessage}
-        </Alert>
-      </Snackbar>
-    </ThemeProvider>
+        </Modal>
+        <Snackbar open={isAlertOpen} autoHideDuration={6000} onClose={handleAlertClose}>
+          <Alert onClose={handleAlertClose} severity="error">{alertMessage}</Alert>
+        </Snackbar>
+      </ThemeProvider>
     </div>
   );
 };

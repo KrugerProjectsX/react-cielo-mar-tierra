@@ -13,30 +13,30 @@ import MyFlats from "./pages/MyFlats";
 import Flat from "./pages/Flat";
 import RegisterFlat from './pages/RegisterFlat';
 import Flats from "./pages/Flats";
-
+import Header from "./components/Header";
+import Footer from './components/Footer';
 
 function App() {
   return (
-  <>
-  
-  <Routes>
-      <Route path="/" element={<Login  />} />
-      <Route path={"/dashboard"} element={<Home />}  />
-      <Route path={"/my-flats"} element={<MyFlats/>}/>
-      <Route path={"/my-favorites-flats"} element={<FlatsFavorites/>}/>
-      <Route path={"/users"} element={<Users/>}/>
-      <Route path="/register" element={<Register />}/>
-      <Route path="/profile" element={<Profile />} />
-      <Route path={"/profile/edit"} element={<ProfileUpdate/>}/>
-      <Route path={"/profile/edit/:userId"} element={<ProfileUpdate/>}/>
-      <Route path="/registerFlat" element={<RegisterFlat />}/>
-      <Route path={"/flat/:id"} element={<Flat/>} />
-      <Route path={"/flats"} element={<Flats/>}  />
-      <Route path={"/flat/edit/:id"} element={<FlatEdit/>} />
-      
-    </Routes>
-  </>
-    
+    <>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path={"/dashboard"} element={<Home />} />
+        <Route path={"/my-flats"} element={<MyFlats />} />
+        <Route path={"/my-favorites-flats"} element={<FlatsFavorites />} />
+        <Route path={"/users"} element={<Users />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path={"/profile/edit"} element={<ProfileUpdate />} />
+        <Route path={"/profile/edit/:userId"} element={<ProfileUpdate />} />
+        <Route path="/registerFlat" element={<RegisterFlat />} />
+        <Route path={"/flat/:id"} element={<Flat />} />
+        <Route path={"/flats"} element={<Flats />} />
+        <Route path={"/flat/edit/:id"} element={<FlatEdit />} />
+      </Routes>
+      <Footer />
+    </>
   );
 }
 

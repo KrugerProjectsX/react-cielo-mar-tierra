@@ -1,31 +1,23 @@
-import Header from "../components/Header";
+import React from "react";
 import RegisterFlat from "./RegisterFlat";
-import backgroundpages from '../images/backgroundpages.avif'
-import Typography from '@mui/material/Typography'
 
-const bgStyle = {
-  backgroundImage: `url(${backgroundpages})`,
-  backgroundSize: 'cover', // Ajusta el tamaño de la imagen para cubrir todo el contenedor
-  backgroundPosition: 'center',
-  position: 'sticky',
+const containerStyle = {
+  backgroundColor: "#f0f3f4", // Elegant plain color
   width: '100%',
   height: '100%',
-  
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  paddingTop: '80px', // Padding only at the top
 };
 
-
-
-
-export default function MyFlats() {
+const MyFlats = () => {
   return (
-    <div style={bgStyle}>
-      <Header/>
-      <div className="justify-center flex mt-10 ">
-                <Typography  variant="h3" component="h1" gutterBottom  style={{  fontSize: "2.5rem", fontWeight: "bold", marginBottom: "20px" }}>
-  View Flat
-</Typography></div>
+    <div style={containerStyle}>
       <RegisterFlat />
-      
     </div>
   );
 }
+
+export default MyFlats;
